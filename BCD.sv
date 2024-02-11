@@ -22,10 +22,10 @@ module BCD
 (
     input logic clk,
     input logic rst,
-    input logic SWITCH_BCD1,
-    input logic SWITCH_BCD2,
-    input logic SWITCH_BCD3,
-    input logic SWITCH_BCD4,
+    input logic SWITCH1,
+    input logic SWITCH2,
+    input logic SWITCH3,
+    input logic SWITCH4,
     output logic [11:0] dec_out
 );
     logic [7:0] bin_in;
@@ -44,19 +44,19 @@ module BCD
     
 always_ff @(posedge clk)
 begin
-    if (SWITCH_BCD1) // to set the first value 
+    if (SWITCH1) // to set the first value 
     begin
         bin_in <= 8'd243;
     end
-    else if (SWITCH_BCD2) // to set the second value 
+    else if (SWITCH2) // to set the second value 
     begin
         bin_in <= 8'd5;
     end
-    else if (SWITCH_BCD3) // to set the third value 
+    else if (SWITCH3) // to set the third value 
     begin
         bin_in <= 8'd76;
     end
-    else if (SWITCH_BCD4) // to set the fourth value 
+    else if (SWITCH4) // to set the fourth value 
     begin
         bin_in <= 8'd198;
     end
