@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05.01.2024 12:33:47
+// Create Date: 11.02.2024 14:42:36
 // Design Name: 
 // Module Name: BCD_TB
 // Project Name: 
@@ -19,6 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+
 module BCD_TB;
 
 logic clk;
@@ -29,7 +30,7 @@ logic SWITCH3;
 logic SWITCH4;
 
 logic [11:0] dec_out;
-logic [3:0] dec_out1, dec_out1;
+logic [3:0] dec_out1, dec_out10, dec_out100;
 
 BCD uut (
     .clk(clk),
