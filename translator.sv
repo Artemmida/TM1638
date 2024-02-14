@@ -27,7 +27,7 @@ module translator(
     
 always_comb
 begin
-case (input)
+case (inputt)
     4'd0: outputt = 8'b1111_1100;  //0
     4'd1: outputt = 8'b0110_0000;  //1
     4'd2: outputt = 8'b1101_1010;  //2
