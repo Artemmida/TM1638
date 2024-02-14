@@ -59,10 +59,12 @@ SWITCH4= 1'd0;
 #4 rst = 1'd0;
 #1 rst = 1'd1;
 
-#95 SWITCH1= 1'd0;
+#40 SWITCH1= 1'd0;
 #4 rst = 1'd0;
 #1 rst = 1'd1;
 #100 SWITCH2= 1'd1;
+#4 rst = 1'd0;
+#1 rst = 1'd1;
 #100 $finish;
 end
 
