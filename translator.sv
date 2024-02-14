@@ -28,17 +28,17 @@ module translator(
 always_comb
 begin
 case (input)
-    4'd0: outputt = 8'b1111_1100;
-    4'd1: outputt = 8'b0110_0000;
-    4'd2: outputt = 8'b1101_1010;
-    4'd3: outputt = 8'b1111_0010;
-    4'd4: outputt = 8'b0110_0110;
-    4'd5: outputt = 8'b1011_0110;
-    4'd6: outputt = 8'b1011_1110;
-    4'd7: outputt = 8'b1110_0000;
-    4'd8: outputt = 8'b1111_1110;
-    4'd9: outputt = 8'b1111_0110;
-    default: outputt = 8'b0000_0001;
+    4'd0: outputt = 8'b1111_1100;  //0
+    4'd1: outputt = 8'b0110_0000;  //1
+    4'd2: outputt = 8'b1101_1010;  //2
+    4'd3: outputt = 8'b1111_0010;  //3
+    4'd4: outputt = 8'b0110_0110;  //4
+    4'd5: outputt = 8'b1011_0110;  //5
+    4'd6: outputt = 8'b1011_1110;  //6
+    4'd7: outputt = 8'b1110_0000;  //7
+    4'd8: outputt = 8'b1111_1110;  //8
+    4'd9: outputt = 8'b1111_0110;  //9
+    default: outputt = 8'b0000_0001;  //default error
 endcase
 end
 endmodule
