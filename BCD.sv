@@ -20,13 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 module BCD
 (
-    input logic clk,
-    input logic rst,
-    input logic SWITCH1,
+    input logic clk, //clock
+    input logic rst, // reset
+    input logic SWITCH1, //switches
     input logic SWITCH2,
     input logic SWITCH3,
     input logic SWITCH4,
-    output logic [11:0] dec_out
+    output logic [11:0] dec_out // final data
 );
     logic [7:0] bin_in;
     logic [7:0] bin;
@@ -34,6 +34,7 @@ module BCD
     logic [3:0] i;
     logic [11:0] bcd;
     
+     //state machine
     localparam RESET = 3'd0;
     localparam START = 3'd1;
     localparam SHIFT = 3'd2;
@@ -42,7 +43,7 @@ module BCD
     localparam WAITT = 3'd5;
     
     
-always_ff @(posedge clk)
+always_ff @(posedge clk) // choosing the data to output
 begin
     if (SWITCH1) // to set the first value 
     begin
@@ -67,13 +68,13 @@ begin
 end
     
     
-always_ff @ (posedge clk)
+always_ff @ (posedge clk) // state machine
     if (!rst)
         state <= RESET;
     else
     begin
         case (state)
-        RESET:
+        RESET: //reset
         begin
             i <= 'd0;
             bcd <= 'd0;
@@ -82,12 +83,12 @@ always_ff @ (posedge clk)
             state <= START;
         end
         START:
-        begin
+        begin //initialization
             bcd <= 'd0;
             bin <= bin_in;
             state <= SHIFT;
         end
-        SHIFT:
+        SHIFT: //shifting data to get the data in 2-10 code
         begin
             bin <= {bin [6:0], 1'd0};
             bcd <= {bcd [10:0], bin[7]};
@@ -97,7 +98,7 @@ always_ff @ (posedge clk)
             else
                 state <= ADD;
         end
-        ADD:
+        ADD: //adding value
         begin
             if (bcd[3:0] > 'd4)
             begin
@@ -113,13 +114,13 @@ always_ff @ (posedge clk)
             end
             state <= SHIFT;
         end
-        FINISH:
+        FINISH: //set the output date
         begin
             i <= 4'd0;
             dec_out <= bcd;
             state <= WAITT;
         end
-        WAITT:
+        WAITT: // waitting
         begin
             state <= WAITT;
         end
