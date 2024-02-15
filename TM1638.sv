@@ -35,6 +35,9 @@ module TM1638
     (*mark_debug="true"*) logic int_clk_2; 
 	
     logic [4:0] l;
+    logic [7:0] i;
+    logic [4:0] j;
+	logic [7:0] k;
 	
 	logic [0:151] MAIN_DATA_BUFF;
 	
@@ -116,4 +119,105 @@ begin
             if (st1 == 3'd5)          
             new_state1 <= WAITT;
     endcase
+end
+
+always_ff @(posedge int_clk_2)
+begin
+	case (state1)
+		SINGLEWAITT:
+		begin
+            strobe <= 1'd1;
+            i <= 8'd0;
+            j <= 5'd0;
+            out_clk_1 <= 0'd1;
+			st1 <= 3'd0;
+		end
+		START:
+		begin
+		    strobe <= 1'd0;
+            st1 <= 3'd1;
+		end    
+		CMD12:
+		begin 
+			if (((i < 8'd15) || ( i > 8'd20)) && (i < 8'd36))
+			begin 
+				strobe <= 1'd0;
+				out_clk_1 <= ~out_clk_1;
+				i <= i+8'd1;
+			end
+			else if (((i > 8'd15) && (i < 8'd20)) || (i == 8'd36))
+			begin
+				strobe <= 1'd0;
+				out_clk_1 <= 1'd1;
+				i <= i+8'd1;
+				if (i > 8'd16 && i < 8'd19)
+					strobe <= 1'd1;
+			end
+			else
+			begin
+				strobe <= 1'd0;
+				out_clk_1 <= 1'd1;
+				st1 <= 3'd2;
+				i <= 8'd0;
+			end
+		end
+		MAIN_DATA:
+		begin
+			if (j < 5'd16)
+			begin
+				if (i < 8'd16)
+				begin
+					out_clk_1 <= ~out_clk_1;
+					i <= i+8'd1;
+				end
+				else
+				begin
+					out_clk_1 <= 1'd1;
+					i <= 8'd0;
+					j <= j+5'd1;
+				end
+			end
+			else if (j < 5'd18)
+			begin
+				strobe <= 1'd1;
+				out_clk_1 <= 1'd1;
+				i <= 8'd0;
+				j <= j+5'd1;
+			end
+			else
+			begin
+				strobe <= 1'd0;
+				out_clk_1 <= 1'd1;
+				j <= 5'd0;
+				st1 <= 3'd3;
+			end
+		end
+		CMD3:
+		begin
+			if ((i > 8'd1) && (i < 8'd16))
+			begin
+				strobe <= 1'd0;
+				out_clk_1 <= ~out_clk_1;
+				i <= i+8'd1;
+			end
+			else if ((i == 8'd1) || (i == 8'd16))
+			begin
+				strobe <= 1'd0;
+				out_clk_1 <= 1'd1;
+				i <= i+8'd1;
+			end
+			else if (i == 8'd0)
+			begin
+				strobe <= 1'd1;
+				out_clk_1 <= 1'd1;
+				i <= i+8'd1;
+			end 
+			else
+			begin
+				strobe <= 1'd1;
+				i <= 8'd0;
+				st1 <= 3'd4;
+			end
+		end
+	endcase
 end
