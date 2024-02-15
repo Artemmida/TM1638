@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module TM1638
 (
     input logic clk,
@@ -47,15 +46,15 @@ module TM1638
     START,
     CMD12,
     MAIN_DATA,
-    CMD3,
+    CMD33,
 	WAITT
 }
 state1, new_state1;  
 	logic [2:0] st1;
     
-    localparam [0:7] CMD_1 = 8'b0000_0010;
-    localparam [0:7] CMD_2 = 8'b0000_0011;
-    localparam [0:7] CMD_3 = 8'b1111_0001;
+    localparam [0:7] CMD1 = 8'b0000_0010;
+    localparam [0:7] CMD2 = 8'b0000_0011;
+    localparam [0:7] CMD3 = 8'b1111_0001;
     
     localparam [0:7] ZERO = 8'b1111_1100;
 
@@ -94,7 +93,7 @@ begin
     end
     else
     begin
-       MAIN_DATA_BUFF <= {CMD_1, CMD_2, ZERO, 8'd0, ZERO, 8'd0, ZERO, 8'd0, ZERO, 8'd0, ZERO, 8'd0, F, 8'd0, S, 8'd0, T, 8'd0, CMD_3};
+       MAIN_DATA_BUFF <= {CMD1, CMD2, ZERO, 8'd0, ZERO, 8'd0, ZERO, 8'd0, ZERO, 8'd0, ZERO, 8'd0, F, 8'd0, S, 8'd0, T, 8'd0, CMD3};
 	end
 end
 
@@ -111,8 +110,8 @@ begin
             new_state1 <= MAIN_DATA;
         MAIN_DATA:
             if (st1 == 3'd3)        
-            new_state1 <= CMD3;
-        CMD3:
+            new_state1 <= CMD33;
+        CMD33:
             if (st1 == 3'd4)         
             new_state1 <= WAITT;
         WAITT:
@@ -129,7 +128,7 @@ begin
             strobe <= 1'd1;
             i <= 8'd0;
             j <= 5'd0;
-            out_clk_1 <= 0'd1;
+            out_clk_1 <= 1'd1;
 			st1 <= 3'd0;
 		end
 		START:
@@ -139,7 +138,7 @@ begin
 		end    
 		CMD12:
 		begin 
-			if (((i < 8'd15) || ( i > 8'd20)) && (i < 8'd36))
+			if (((i < 8'd16) || ( i > 8'd19)) && (i < 8'd36))
 			begin 
 				strobe <= 1'd0;
 				out_clk_1 <= ~out_clk_1;
@@ -192,7 +191,7 @@ begin
 				st1 <= 3'd3;
 			end
 		end
-		CMD3:
+		CMD33:
 		begin
 			if ((i > 8'd1) && (i < 8'd16))
 			begin
@@ -219,5 +218,24 @@ begin
 				st1 <= 3'd4;
 			end
 		end
+	    WAITT:
+		begin
+			st1 <= 3'd5;
+		end
 	endcase
 end
+
+always_ff @(negedge out_clk_1 or negedge rst)
+    if (!rst)
+    begin
+        dio <= 1'd0;
+        k <= 8'd0;
+    end
+    else
+    begin
+        dio <= MAIN_DATA_BUFF[k];
+        k <= k + 8'd1;
+        if (k == 8'd151)
+              k <= 8'd0;                        
+    end
+endmodule
