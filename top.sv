@@ -38,9 +38,9 @@ logic [7:0] T; // abcdefg "Third value"
 	
 BCD uut1 (.clk(clk), .rst(rst), .SWITCH1(SWITCH1), .SWITCH2(SWITCH2), .SWITCH3(SWITCH3),.SWITCH4(SWITCH4), .dec_out(dec_out));
 
-translator uut2 (.in(dec_out[3:0]), .out(T));
-translator uut3 (.in(dec_out[7:4]), .out(S));
-translator uut4 (.in(dec_out[11:8]), .out(F));
+translator uut2 (.inputt(dec_out[3:0]), .outputt(T));
+translator uut3 (.inputt(dec_out[7:4]), .outputt(S));
+translator uut4 (.inputt(dec_out[11:8]), .outputt(F));
 
 TM1638 uut5 (.clk(clk), .rst(rst), .F(F), .S(S), .T(T), .out_clk_1(out_clk_1), .strobe(strobe), .dio(dio)); 
 
