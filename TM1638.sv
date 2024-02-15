@@ -19,28 +19,29 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+
 module TM1638
 (
-    input logic clk,
-	(*mark_debug="true"*) input logic rst,
-	input logic [0:7] F,
-    input logic [0:7] S,
-    input logic [0:7] T,
+    input logic clk, // input clock 100 MHz
+	(*mark_debug="true"*) input logic rst, // reset
+	input logic [0:7] F, // abcdefg "First value"
+    input logic [0:7] S, // abcdefg "Second value"
+    input logic [0:7] T, // abcdefg "Third value"	
 	
-    (*mark_debug="true"*) output logic out_clk_1,
-    (*mark_debug="true"*) output logic strobe,
-    (*mark_debug="true"*) output logic dio
+    (*mark_debug="true"*) output logic out_clk_1, // clock 1 MHz
+    (*mark_debug="true"*) output logic strobe, // strobe signal
+    (*mark_debug="true"*) output logic dio // data input-output signals
 );
-    (*mark_debug="true"*) logic int_clk_2; 
+    (*mark_debug="true"*) logic int_clk_2; // internal clock 2 MHz
 	
-    logic [4:0] l;
-    logic [7:0] i;
-    logic [4:0] j;
-	logic [7:0] k;
+    logic [4:0] l; // counter for creating 2 MHz int_clk_2
+    logic [7:0] i; // counter for creating 1 MHz out_clk_1
+    logic [4:0] j; // additional counter for creating 1 MHz out_clk_1
+	logic [7:0] k; // counter for dio signals
 	
-	logic [0:151] MAIN_DATA_BUFF;
+	logic [0:151] MAIN_DATA_BUFF; // stores all data with cmds and main data
 	
-	enum logic [2:0]
+	enum logic [2:0] // State machine
 {
     SINGLEWAITT,
     START,
@@ -52,14 +53,15 @@ module TM1638
 state1, new_state1;  
 	logic [2:0] st1;
     
-    localparam [0:7] CMD1 = 8'b0000_0010;
-    localparam [0:7] CMD2 = 8'b0000_0011;
-    localparam [0:7] CMD3 = 8'b1111_0001;
+    localparam [0:7] CMD1 = 8'b0000_0010; // first command for writing data with auto increasing address mode 
+    localparam [0:7] CMD2 = 8'b0000_0011; // second command for starting from 0 address
+    localparam [0:7] CMD3 = 8'b1111_0001; // last command for displaing data
     
-    localparam [0:7] ZERO = 8'b1111_1100;
+    localparam [0:7] ZERO = 8'b1111_1100; // abcdefg "0"
 
+// arty has rst=1 as default => negedge rst
     
-always_ff @(posedge clk)
+always_ff @(posedge clk) // creating 2 MHz int_clk_2 from 100 MHz clk 
 begin
     if (!rst)
     begin
@@ -70,7 +72,7 @@ begin
     begin
         if (l < 5'd24) 
             l <= l+5'd1;
-        else
+        else //every 25th tact of posedge clk switching int_clk_2 => 100->2 MHz
         begin
             int_clk_2 <= ~int_clk_2; 
             l <= 5'd0;
@@ -79,13 +81,13 @@ begin
 end
 
 
-always_ff @(posedge int_clk_2 or negedge rst)
+always_ff @(posedge int_clk_2 or negedge rst) //resetig state machine with reset and swithing by posedge int_clk_2
     if (!rst)
         state1 <= SINGLEWAITT;
     else
         state1 <= new_state1;
 
-always_comb
+always_comb //inicialization of state machine's data
 begin
     if (!rst)
     begin
@@ -97,7 +99,7 @@ begin
 	end
 end
 
-always_ff @(posedge int_clk_2)
+always_ff @(posedge int_clk_2) // the sequence of switging states
 begin
     case(state1)
         SINGLEWAITT:
@@ -120,10 +122,10 @@ begin
     endcase
 end
 
-always_ff @(posedge int_clk_2)
+always_ff @(posedge int_clk_2) // forming strobe signal and 1 MHz out_clk_1  
 begin
 	case (state1)
-		SINGLEWAITT:
+		SINGLEWAITT: // initial state? setting parametrs 
 		begin
             strobe <= 1'd1;
             i <= 8'd0;
@@ -131,17 +133,17 @@ begin
             out_clk_1 <= 1'd1;
 			st1 <= 3'd0;
 		end
-		START:
+		START: // for delay between negedge strobe and negedge out_clk_1
 		begin
 		    strobe <= 1'd0;
             st1 <= 3'd1;
 		end    
-		CMD12:
+		CMD12: // clk for cmd_1 and cmd_2
 		begin 
 			if (((i < 8'd16) || ( i > 8'd19)) && (i < 8'd36))
 			begin 
 				strobe <= 1'd0;
-				out_clk_1 <= ~out_clk_1;
+				out_clk_1 <= ~out_clk_1; // creating 1 MHz out_clk_1 from 2 MHz int_clk_2 
 				i <= i+8'd1;
 			end
 			else if (((i > 8'd15) && (i < 8'd20)) || (i == 8'd36))
@@ -149,7 +151,7 @@ begin
 				strobe <= 1'd0;
 				out_clk_1 <= 1'd1;
 				i <= i+8'd1;
-				if (i > 8'd16 && i < 8'd19)
+				if (i > 8'd16 && i < 8'd19) // for delay between first command and strobe signal
 					strobe <= 1'd1;
 			end
 			else
@@ -160,11 +162,11 @@ begin
 				i <= 8'd0;
 			end
 		end
-		MAIN_DATA:
+		MAIN_DATA: // clk for main_data_buff
 		begin
-			if (j < 5'd16)
+			if (j < 5'd16) // for delay between 8-bit data in main_data_buff
 			begin
-				if (i < 8'd16)
+				if (i < 8'd16) // clk for bits in 8-bit data
 				begin
 					out_clk_1 <= ~out_clk_1;
 					i <= i+8'd1;
@@ -191,7 +193,7 @@ begin
 				st1 <= 3'd3;
 			end
 		end
-		CMD33:
+		CMD33: // clk for cmd_3
 		begin
 			if ((i > 8'd1) && (i < 8'd16))
 			begin
@@ -218,14 +220,15 @@ begin
 				st1 <= 3'd4;
 			end
 		end
-	    WAITT:
+	    WAITT: // waiting state
 		begin
 			st1 <= 3'd5;
 		end
 	endcase
 end
 
-always_ff @(negedge out_clk_1 or negedge rst)
+// 7 reads date by posedge out_clk_1 so we need to preset data by negedge out_clk
+always_ff @(negedge out_clk_1 or negedge rst) //  sending data to 7 according to state and out_clk_1
     if (!rst)
     begin
         dio <= 1'd0;
@@ -239,3 +242,5 @@ always_ff @(negedge out_clk_1 or negedge rst)
               k <= 8'd0;                        
     end
 endmodule
+
+
