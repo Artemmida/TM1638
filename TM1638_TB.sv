@@ -21,15 +21,16 @@
 
 
 module TM1638_TB;
-logic clk;
-logic rst;
-logic [0:7] F;
-logic [0:7] S;
-logic [0:7] T;
+logic clk; //clock
+logic rst; //reset
+logic [0:7] F; //first digit of the number
+logic [0:7] S; //second digit of the number
+logic [0:7] T; //third digit of the number
 
-logic out_clk_1;
-logic strobe;
-logic dio;
+
+logic out_clk_1; //output clock
+logic strobe; //strobe signal
+logic dio; //output data
 
 TM1638 uut (
 .clk(clk),
@@ -50,11 +51,11 @@ begin
 	S = 8'd96; // abcdefg "1" "0110_0000"
 	T = 8'd224; // abcdefg "7" "1110_0000"
 	rst = 1'd1;
-	#5000 rst = 1'd0;
+	#5000 rst = 1'd0; //press reset
 	#5000 rst = 1'd1;
 end
 always
 begin
-	#5 clk <= ~clk;
+	#5 clk <= ~clk; //clock
 end
 endmodule

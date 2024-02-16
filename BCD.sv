@@ -22,10 +22,10 @@ module BCD
 (
     input logic clk, //clock
     input logic rst, // reset
-    input logic SWITCH1, //switches
-    input logic SWITCH2,
-    input logic SWITCH3,
-    input logic SWITCH4,
+    input logic SWITCH_BCD1, //switches
+    input logic SWITCH_BCD2,
+    input logic SWITCH_BCD3,
+    input logic SWITCH_BCD4,
     output logic [11:0] dec_out // final data
 );
     logic [7:0] bin_in;
@@ -34,7 +34,7 @@ module BCD
     logic [3:0] i;
     logic [11:0] bcd;
     
-     //state machine
+	 //state machine
     localparam RESET = 3'd0;
     localparam START = 3'd1;
     localparam SHIFT = 3'd2;
@@ -45,19 +45,19 @@ module BCD
     
 always_ff @(posedge clk) // choosing the data to output
 begin
-    if (SWITCH1) // to set the first value 
+    if (SWITCH_BCD1) // to set the first value 
     begin
         bin_in <= 8'd243;
     end
-    else if (SWITCH2) // to set the second value 
+    else if (SWITCH_BCD2) // to set the second value 
     begin
         bin_in <= 8'd5;
     end
-    else if (SWITCH3) // to set the third value 
+    else if (SWITCH_BCD3) // to set the third value 
     begin
         bin_in <= 8'd76;
     end
-    else if (SWITCH4) // to set the fourth value 
+    else if (SWITCH_BCD4) // to set the fourth value 
     begin
         bin_in <= 8'd198;
     end
@@ -82,8 +82,8 @@ always_ff @ (posedge clk) // state machine
             dec_out <= 'd0;
             state <= START;
         end
-        START:
-        begin //initialization
+        START: //initialization
+        begin
             bcd <= 'd0;
             bin <= bin_in;
             state <= SHIFT;
@@ -120,7 +120,7 @@ always_ff @ (posedge clk) // state machine
             dec_out <= bcd;
             state <= WAITT;
         end
-        WAITT: // waitting
+        WAITT:  // waitting
         begin
             state <= WAITT;
         end

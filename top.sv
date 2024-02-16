@@ -36,7 +36,7 @@ logic [7:0] F; // abcdefg "First value"
 logic [7:0] S; // abcdefg "Second value"
 logic [7:0] T; // abcdefg "Third value"	
 	
-BCD uut1 (.clk(clk), .rst(rst), .SWITCH1(SWITCH1), .SWITCH2(SWITCH2), .SWITCH3(SWITCH3),.SWITCH4(SWITCH4), .dec_out(dec_out));
+BCD uut1 (.clk(clk), .rst(rst), .SWITCH_BCD1(SWITCH1), .SWITCH_BCD2(SWITCH2), .SWITCH_BCD3(SWITCH3),.SWITCH_BCD4(SWITCH4), .dec_out(dec_out));
 
 translator uut2 (.inputt(dec_out[3:0]), .outputt(T));
 translator uut3 (.inputt(dec_out[7:4]), .outputt(S));
