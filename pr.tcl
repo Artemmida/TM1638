@@ -127,10 +127,10 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 set obj [get_filesets sources_1]
 # Import local files from the original project
 set files [list \
- [file normalize "${origin_dir}/project_2/project_2.srcs/sources_1/imports/TM1638master/BCD.sv"]\
- [file normalize "${origin_dir}/project_2/project_2.srcs/sources_1/imports/TM1638master/TM1638.sv"]\
- [file normalize "${origin_dir}/project_2/project_2.srcs/sources_1/imports/TM1638master/translator.sv"]\
- [file normalize "${origin_dir}/project_2/project_2.srcs/sources_1/imports/TM1638master/top.sv"]\
+ [file normalize "${origin_dir}/BCD.sv"]\
+ [file normalize "${origin_dir}/TM1638.sv"]\
+ [file normalize "${origin_dir}/translator.sv"]\
+ [file normalize "${origin_dir}/top.sv"]\
 ]
 set imported_files [import_files -fileset sources_1 $files]
 
