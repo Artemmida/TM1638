@@ -99,7 +99,7 @@ if { $::argc > 0 } {
 }
 
 # Set the directory path for the original project from where this script was exported
-set orig_proj_dir "[file normalize "$origin_dir/project_3"]"
+set orig_proj_dir "[file normalize "$origin_dir/${_xil_proj_name_}"]"
 
 # Create project
 create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part xc7a35ticsg324-1L
